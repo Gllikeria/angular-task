@@ -1,0 +1,20 @@
+<div class="main">
+    
+    <ng-container *ngFor = 'let friend of queueArray;  first as first'>
+        <h4 *ngIf= "!first" class="oneOperator"> > </h4>
+        <a class="friends-list" (click)='friendNavigation(friend)'>{{friend.prefix}} {{friend.name}} {{friend.lastName}}</a>
+    </ng-container>
+    <h2 class="friends-title">Friends:</h2>
+    <div class="container">
+        <div *ngFor='let user of friendsArray' class="grid-item" (click)="userComp(user)">
+            <img src='{{user.imageUrl}}/{{user.id}}' alt="">
+            <h3>{{user.prefix}} {{user.name}} {{user.lastName}}</h3>
+            <h4>{{user.title}}</h4>
+        </div>
+    </div>
+    <div class="footer" #footer>
+        <app-loader *ngIf='isPending'></app-loader>
+    </div>
+    
+</div>
+    

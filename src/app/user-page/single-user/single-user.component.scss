@@ -1,0 +1,54 @@
+@import url("https://fonts.googleapis.com/css2?family=Mohave:wght@400;600&family=Oswald:wght@200;400&family=Source+Sans+3:ital,wght@0,300;0,600;1,300&display=swap");
+
+.userContainer {
+  width: 97%;
+  margin: 20px auto;
+  display: grid;
+  grid-template-columns: 320px auto 20%;
+  gap: 10px;
+  legend {
+    font-family: "Mohave", sans-serif;
+    font-size: 1.2rem;
+  }
+  li {
+    font-size: 1.1rem;
+    list-style-type: none;
+    font-family: "Mohave", sans-serif;
+
+    .underlined {
+      text-decoration: underline;
+    }
+  }
+  ul {
+    padding: 0;
+  }
+  h3 {
+    margin: 0;
+    padding: 0;
+    font-family: "Source Sans 3", sans-serif;
+  }
+  .title {
+    font-weight: 300;
+    font-style: italic;
+  }
+  div {
+    padding: 15px;
+  }
+  img {
+    width: 100%;
+  }
+  .info,
+  .address {
+    border: 2px solid rgb(160, 158, 158);
+  }
+}
+.footer {
+  height: 100px;
+  background-color: white;
+}
+
+@media (max-width: 990px) {
+  .userContainer {
+    display: inline;
+  }
+}
