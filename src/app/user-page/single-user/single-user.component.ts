@@ -1,12 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import {
   ActivatedRoute,
   NavigationEnd,
-  NavigationError,
   NavigationStart,
   Router,
 } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/api.service';
 
 @Component({
@@ -23,13 +21,11 @@ export class SingleUserComponent {
   ) {
     router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        let id = this.route.snapshot.paramMap.get('id');
-        this.api.getUser(id).subscribe((user) => {
+        // after every navigation load new user
+        let id = this.route.snapshot.paramMap.get('id'); //get param from URL
+        this.api.getUser(id).subscribe((user: object) => {
           this.currentUser = user;
         });
-      }
-      if (event instanceof NavigationStart) {
-        let id = this.route.snapshot.paramMap.get('id');
       }
     });
   }

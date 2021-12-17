@@ -1,53 +1,52 @@
 import { Router } from '@angular/router';
 import {
-  AfterContentChecked,
-  AfterViewChecked,
   AfterViewInit,
   Component,
   ElementRef,
-  HostListener,
   OnDestroy,
-  OnInit,
-  QueryList,
   ViewChild,
-  ViewChildren,
 } from '@angular/core';
-import { LoaderComponent } from '../loader/loader.component';
 import { ApiService } from '../api.service';
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.scss'],
 })
-export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
+export class UsersComponent implements AfterViewInit, OnDestroy {
   constructor(private api: ApiService, private router: Router) {}
-  usersObj: any;
-  usersArray: any = [];
-  obs$: any;
-  isPending: boolean = false;
-  @ViewChild('footer') footer!: ElementRef<HTMLElement>;
-  ngOnInit(): void {
-    // this.api.getAllusers();
-    // this.usersArray = this.api.usersArray;
-  }
+  usersArray: any = []; //all displayed users
+  isPending: boolean = false; //for loader
+
   ngAfterViewInit(): void {
     this.observer.observe(this.footer.nativeElement);
   }
-  ngOnDestroy() {
-    this.usersArray = [];
-    this.api.currentPage = 1;
-  }
+  @ViewChild('footer') footer!: ElementRef<HTMLElement>;
+
+  options = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0,
+  };
+  //footer observer to load users if its in the view
+  observer = new IntersectionObserver((enteries) => {
+    if (enteries[0].isIntersecting) {
+      this.loadusers();
+    }
+  }, this.options);
 
   loadusers() {
     this.isPending = true;
     if (this.api.pagesToLoad) {
       this.api.getAllusers().subscribe((data) => {
         this.isPending = false;
-        let a = Object.values(data);
-        a[1].forEach((element: any) => {
+
+        let apiKeys = Object.values(data);
+        apiKeys[1].forEach((element: any) => {
+          //push single user in array
           this.usersArray.push(element);
         });
-        if (a[0].nextPage) {
+
+        if (apiKeys[0].nextPage) {
           this.api.currentPage++;
         } else {
           this.api.pagesToLoad = false;
@@ -58,20 +57,13 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  options = {
-    root: null,
-    rootMargin: '0px',
-    threshold: 0,
-  };
-
-  observer = new IntersectionObserver((enteries) => {
-    if (enteries[0].isIntersecting) {
-      this.loadusers();
-    }
-    console.log(enteries);
-  }, this.options);
-
   userComp(id: any) {
+    //called when single user item is clicked
     this.router.navigate(['/user', id.id]);
+  }
+  ngOnDestroy() {
+    //reset users Array and default page
+    this.usersArray = [];
+    this.api.currentPage = 1;
   }
 }

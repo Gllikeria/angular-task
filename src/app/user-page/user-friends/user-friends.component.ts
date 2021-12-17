@@ -1,24 +1,12 @@
-import {
-  Component,
-  ElementRef,
-  Input,
-  OnInit,
-  Output,
-  ViewChild,
-  EventEmitter,
-  OnChanges,
-  SimpleChanges,
-  SimpleChange,
-} from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import {
   ActivatedRoute,
   NavigationEnd,
-  NavigationError,
   NavigationStart,
   Router,
 } from '@angular/router';
 import { ApiService } from 'src/app/api.service';
-import { HttpClient } from '@angular/common/http';
+import { IUser } from './IUser';
 
 @Component({
   selector: 'app-user-friends',
@@ -26,8 +14,14 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./user-friends.component.scss'],
 })
 export class UserFriendsComponent implements OnInit {
-  currentUser: any;
-  usersQueue: any = [];
+  friendsArray: object[] = [];
+  queueArray: object[] = [];
+  isPending: boolean = false;
+  options = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0,
+  };
   constructor(
     private api: ApiService,
     private router: Router,
@@ -35,19 +29,21 @@ export class UserFriendsComponent implements OnInit {
   ) {
     router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
+        //after every navigation pages load from start
         this.api.currentFriendsPage = 1;
       }
       if (event instanceof NavigationStart) {
+        // every new navigation will have new friends, so array should be empty
         this.friendsArray = [];
       }
     });
   }
-  queueArray: any = [];
-  isPending: boolean = false;
   ngOnInit(): void {
     let id = this.route.snapshot.paramMap.get('id');
     this.friendsArray = [];
     this.api.getUser(id).subscribe((data) => {
+      // for friends navigation history
+      // for first user
       this.queueArray.push(data);
     });
   }
@@ -59,15 +55,11 @@ export class UserFriendsComponent implements OnInit {
   ngAfterViewInit(): void {
     this.observer.observe(this.footer.nativeElement);
   }
-  options = {
-    root: null,
-    rootMargin: '0px',
-    threshold: 0,
-  };
 
   observer = new IntersectionObserver((enteries) => {
     if (enteries[0].isIntersecting) {
       this.isPending = true;
+
       let id = this.route.snapshot.paramMap.get('id');
       this.api.getFriends(id).subscribe((data) => {
         this.isPending = false;
@@ -79,15 +71,13 @@ export class UserFriendsComponent implements OnInit {
     }
   }, this.options);
 
-  friendsArray: any = [];
-
   ngOnDestroy() {
     this.friendsArray = [];
     this.api.currentFriendsPage = 1;
     this.queueArray = [];
   }
-  userComp(userObj: any) {
+  userComp(userObj: IUser) {
     this.router.navigate(['user/', userObj.id]);
-    this.queueArray.push(userObj);
+    this.queueArray.push(userObj); //every other friend that is clicked
   }
 }

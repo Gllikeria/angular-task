@@ -1,11 +1,6 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { filter } from 'rxjs';
 
-interface users {
-  pagination: any;
-  list: any;
-}
 @Injectable({
   providedIn: 'root',
 })
